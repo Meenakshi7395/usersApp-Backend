@@ -1,6 +1,12 @@
-package com.example.users;
+package com.example.users.controllers;
 
+import com.example.users.Impl.JwtUtil;
+import com.example.users.Impl.UserDetails;
+import com.example.users.dto.LoginRequest;
+import com.example.users.service.UserService;
+import com.example.users.models.User;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,12 +21,15 @@ import java.util.Map;
 public class UserController {
 
     private final UserService userService;
+    private JwtUtil jwtUtil;
 
-    public UserController(UserService userService) {
+    @Autowired
+    public UserController(UserService userService, JwtUtil jwtUtil) {
         this.userService = userService;
+        this.jwtUtil = jwtUtil;
     }
 
-    //    @RequestMapping(value = {"/users"}, method = RequestMethod.POST)
+    // @RequestMapping(value = {"/users"}, method = RequestMethod.POST)
     @GetMapping("/users")
     public ResponseEntity<List<User>> findAll() {
         return ResponseEntity.ok(userService.findAll());
@@ -49,11 +58,26 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
+    @PostMapping("/login")
+    public String login(@RequestBody LoginRequest request) {
+        // Authenticate the user (e.g., using Spring Security's authentication manager)
+        // If authentication is successful, generate a JWT
+
+        // logic to check if user exists
+
+        UserDetails userDetails = new UserDetails();
+        userDetails.setUserName(request.getUserName());
+        userDetails.setRole("Customer");
+        String token = jwtUtil.generateToken(userDetails);
+
+        return token;
+    }
+
     // used for delete when want to return json response data
 //    public ResponseEntity<Map<String, Object>> deleteUser(@PathVariable Long id) {
 //        boolean deleted = userService.deleteUserById(id);
 //        Map<String, Object> response = new HashMap<>();
-//
+
 //        if (deleted) {
 //            response.put("message", "User deleted successfully");
 //            response.put("status", HttpStatus.OK.value());
@@ -62,7 +86,6 @@ public class UserController {
 //            response.put("message", "User not found");
 //            response.put("status", HttpStatus.NOT_FOUND.value());
 //            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-
 
     @PutMapping("/users/{id}")
     public ResponseEntity<Map<String, Object>> updateUser(@PathVariable Long id, @RequestBody User updatedUser) {

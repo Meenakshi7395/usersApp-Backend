@@ -1,4 +1,6 @@
-package com.example.users;
+package com.example.users.service;
+
+import com.example.users.models.User;
 
 import java.util.List;
 

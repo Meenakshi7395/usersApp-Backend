@@ -1,4 +1,4 @@
-package com.example.users;
+package com.example.users.models;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -37,7 +37,8 @@ public class User {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(Long id)
+    {
         this.id = id;
     }
 
@@ -46,6 +47,7 @@ public class User {
     }
 
     public void setUserName(String userName) {
+
         this.userName = userName;
     }
 

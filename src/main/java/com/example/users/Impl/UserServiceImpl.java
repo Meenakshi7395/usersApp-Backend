@@ -1,8 +1,8 @@
 package com.example.users.Impl;
 
-import com.example.users.User;
-import com.example.users.UserRepository;
-import com.example.users.UserService;
+import com.example.users.models.User;
+import com.example.users.usersRepository.UserRepository;
+import com.example.users.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -47,7 +47,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean updateUser(Long id, User updatedUser) {
         Optional<User> userOptional = userRepository.findById(id);
-        if(userOptional.isPresent()){
+        if (userOptional.isPresent()) {
             User user = userOptional.get();
             user.setUserName(updatedUser.getUserName());
             user.setPassword(updatedUser.getPassword());
@@ -57,7 +57,4 @@ public class UserServiceImpl implements UserService {
         }
         return false;
     }
-
-
-
 }
