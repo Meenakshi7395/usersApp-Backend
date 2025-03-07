@@ -3,6 +3,7 @@ package com.example.users.controllers;
 import com.example.users.Impl.JwtUtil;
 import com.example.users.Impl.UserDetails;
 import com.example.users.dto.LoginRequest;
+import com.example.users.dto.LoginResponse;
 import com.example.users.service.UserService;
 import com.example.users.models.User;
 import jakarta.validation.Valid;
@@ -59,18 +60,24 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public String login(@RequestBody LoginRequest request) {
+    public LoginResponse login(@RequestBody LoginRequest request) {
         // Authenticate the user (e.g., using Spring Security's authentication manager)
         // If authentication is successful, generate a JWT
 
         // logic to check if user exists
+
+
+        LoginResponse loginResponse = new LoginResponse();
 
         UserDetails userDetails = new UserDetails();
         userDetails.setUserName(request.getUserName());
         userDetails.setRole("Customer");
         String token = jwtUtil.generateToken(userDetails);
 
-        return token;
+        loginResponse.setMessage("Authentication Success");
+        loginResponse.setSuccess(false);
+        loginResponse.setToken(token);
+        return loginResponse;
     }
 
     // used for delete when want to return json response data
