@@ -7,6 +7,7 @@ import com.example.users.dto.LoginResponse;
 import com.example.users.service.UserService;
 import com.example.users.models.User;
 import jakarta.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @CrossOrigin(origins = "http://localhost:4200")
 @RestController
@@ -38,7 +40,13 @@ public class UserController {
 
     @PostMapping("/users")
     public ResponseEntity<User> createUser(@Valid @RequestBody User user) {
-        User addedUser = userService.createUser(user);
+        User addedUser = null;
+        try {
+              addedUser = userService.createUser(user);
+        }
+        catch (Exception e){
+            System.out.println(e.getMessage());
+        }
 //      Company c = job.getCompany();
         return new ResponseEntity<>(addedUser, HttpStatus.OK);
     }
@@ -60,24 +68,37 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public LoginResponse login(@RequestBody LoginRequest request) {
+    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request) {
         // Authenticate the user (e.g., using Spring Security's authentication manager)
         // If authentication is successful, generate a JWT
-
-        // logic to check if user exists
-
-
         LoginResponse loginResponse = new LoginResponse();
+        // logic to check if user exists
+        Optional<User> user = userService.findByUserNameAndPassword(request.getUserName(),request.getPassword());
+        if(user.isPresent())
+        {
+            UserDetails userDetails = new UserDetails();
+            userDetails.setUserName(user.get().getUserName());
+            userDetails.setRole(user.get().getRole());
+            String token = jwtUtil.generateToken(userDetails);
 
-        UserDetails userDetails = new UserDetails();
-        userDetails.setUserName(request.getUserName());
-        userDetails.setRole("Customer");
-        String token = jwtUtil.generateToken(userDetails);
+            loginResponse.setMessage("Authentication Success");
+            loginResponse.setSuccess(true);
+            loginResponse.setToken(token);
+            return ResponseEntity.status(HttpStatus.OK).body(loginResponse);
+        }
+        else
+        {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(new LoginResponse(false, "User not found", ""));
+        }
 
-        loginResponse.setMessage("Authentication Success");
-        loginResponse.setSuccess(false);
-        loginResponse.setToken(token);
-        return loginResponse;
+
+
+
+
+        //
+
+
     }
 
     // used for delete when want to return json response data

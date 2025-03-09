@@ -1,9 +1,6 @@
 package com.example.users.models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 
 @Entity
@@ -14,6 +11,7 @@ public class User {
 
     private Long id;
 
+    @Column(unique = true)
     @NotBlank(message = "User Name is required! ")
     private String userName;
 
@@ -26,8 +24,7 @@ public class User {
     public User() {
     }
 
-    public User(Long id, String userName, String password, String role){
-        this.id = id;
+    public User(String userName, String password, String role){
         this.userName = userName;
         this.password = password;
         this.role = role;
